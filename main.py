@@ -205,7 +205,7 @@ async def image_handler(c: Client, m: Message):
         links_text = "<code>" + escape(", ".join(urls)) + "</code>"
 
         await notice.edit_text(
-            "Uploaded successfully!\n" + links_text,
+            "<b>Uploaded successfully ❤️\n\n" + links_text,
             disable_web_page_preview=True,
             parse_mode=ParseMode.HTML,
         )
