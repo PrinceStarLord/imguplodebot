@@ -1,4 +1,4 @@
-# LookMyImg Telegram Uploader Bot (Pyrogram v2)
+# LookMyImg Telegram Uploader Bot
 
 A Telegram bot that accepts images via DM, uploads them to **lookmyimg.com**, and replies **once** with all hosted links in **monospace** (code) format, separated by commas.  
 Access is **restricted to admins** (default: your Telegram user ID `6167872503`).
@@ -15,5 +15,6 @@ Access is **restricted to admins** (default: your Telegram user ID `6167872503`)
 
 ---
 
-## Demo (Response Format)
+## Run the bot
+python3 lookmyimg_bot.py
 
