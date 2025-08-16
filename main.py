@@ -6,7 +6,7 @@ import tempfile
 from contextlib import asynccontextmanager
 from pathlib import Path
 from typing import Any, Optional
-
+from html import escape
 from dotenv import load_dotenv
 from pyrogram import Client, filters
 from pyrogram.types import Message
