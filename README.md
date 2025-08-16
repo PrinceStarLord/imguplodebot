@@ -16,5 +16,5 @@ Access is **restricted to admins** (default: your Telegram user ID `6167872503`)
 ---
 
 ## Run the bot
-python3 lookmyimg_bot.py
-
+`python3 main.py
+`
