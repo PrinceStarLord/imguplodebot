@@ -16,7 +16,7 @@ Access is **restricted to admins** (default: your Telegram user ID `6167872503`)
 ---
 
 ### Don't Forget to fill up .env file
-
+---
 ## Run the bot on VPS
 ```bash
 python3 -m venv venv
