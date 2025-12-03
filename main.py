@@ -28,12 +28,11 @@ EXTRA_FORM_FIELDS = json.loads(os.getenv("EXTRA_FORM_FIELDS", "{}"))
 ALLOWED_EXTS = {".jpg", ".jpeg", ".png", ".webp", ".gif", ".bmp"}
 MAX_FILE_MB = float(os.getenv("MAX_FILE_MB", "30"))
 
-ADMIN_ID = 6167872503
+ADMIN_IDS = set(int(x) for x in os.getenv("ADMIN_IDS", "").split(",") if x.strip().isdigit())
 
 logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
 logger = logging.getLogger("lookmyimg-bot")
 
-# Deduplicate media groups (albums) so we reply once per album
 PROCESSED_MEDIA_GROUPS: set[str] = set()
 
 async def _expire_media_group(gid: str, ttl: int = 180):
@@ -64,7 +63,6 @@ async def _aiohttp_session():
         yield session
 
 def _extract_url(data: Any) -> Optional[str]:
-    # Prioritize common JSON locations
     if isinstance(data, dict):
         for path in (["url"], ["link"], ["data","url"], ["image","url"], ["result","url"], ["result","link"]):
             cur = data
@@ -83,7 +81,6 @@ def _extract_url(data: Any) -> Optional[str]:
                 v = images[0].get(key) if isinstance(images[0], dict) else None
                 if isinstance(v, str):
                     return v
-    # Fallback regex (generic)
     try:
         text = json.dumps(data)
     except Exception:
@@ -134,7 +131,7 @@ app = Client(
 
 @app.on_message(filters.command(["start","help"]) & filters.private)
 async def start_handler(_: Client, m: Message):
-    if not m.from_user or m.from_user.id != ADMIN_ID:
+    if not m.from_user or m.from_user.id not in ADMIN_IDS:
         return await m.reply_text("Access denied. You are not authorized to use this bot.")
     text = (
         "Send me one or more *photos* or *image files* and I'll upload them to LookMyImg and reply with the link(s).\n\n"
@@ -165,19 +162,16 @@ def _validate_image(path: Path):
 
 @app.on_message((filters.photo | filters.document) & filters.private)
 async def image_handler(c: Client, m: Message):
-    if not m.from_user or m.from_user.id != ADMIN_ID:
+    if not m.from_user or m.from_user.id not in ADMIN_IDS:
         return await m.reply_text("Access denied. You are not authorized to use this bot.")
 
     try:
-        # Prevent duplicate replies for the same album
         if m.media_group_id:
             gid = str(m.media_group_id)
             if gid in PROCESSED_MEDIA_GROUPS:
                 return
             PROCESSED_MEDIA_GROUPS.add(gid)
             asyncio.create_task(_expire_media_group(gid))
-
-        # Collect album messages or single
         messages = await c.get_media_group(m.chat.id, m.id) if m.media_group_id else [m]
 
         notice = await m.reply_text("Processing image(s)…")
@@ -200,8 +194,6 @@ async def image_handler(c: Client, m: Message):
 
         if not urls:
             return await notice.edit_text("No image files found in that message/album.")
-
-        # Show ALL links inside a single monospace block, including commas
         links_text = "<code>" + escape(", ".join(urls)) + "</code>"
 
         await notice.edit_text(
