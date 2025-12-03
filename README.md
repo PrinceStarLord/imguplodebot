@@ -17,6 +17,15 @@ Access is **restricted to admins** (default: your Telegram user ID `6167872503`)
 
 ### Don't Forget to fill up .env file
 ---
+---
+##Demo Env.
+```
+API_ID=12345
+API_HASH=jfefbi373jjehfhbu3r3bief
+BOT_TOKEN=39473493:dhieufgbehfvegfvefeeg
+LOOKMYIMG_API_KEY=cenkdjf783rbhsdc36efi&fheg728dferg
+ADMIN_IDS = 483748484,3849475628
+```
 ## Run the bot on VPS
 ```bash
 python3 -m venv venv
